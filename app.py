@@ -2,26 +2,29 @@ import streamlit as st
 import time
 import datetime
 
+# =======================================================================
+# 🔑 स्टेप 1: भाई, बस इस नीचे वाले उद्धरण चिह्न (" ") के अंदर अपनी असली चाबी पेस्ट कर दो।
+# आपको कोड में नीचे कहीं भी जाने या कुछ भी बदलने की ज़रूरत नहीं है!
+HARDCODED_API_KEY = "da7882bf0dmsh..."
+# =======================================================================
+
 # 1. Premium UI & Page Settings
 st.set_page_config(page_title="JugaadRoute AI Master Pro", page_icon="🚀", layout="centered")
 
 st.markdown('<h2 style="text-align: center; color: #1E3A8A; font-family: sans-serif;">🚀 JugaadRoute AI</h2>', unsafe_allow_html=True)
-st.markdown('<p style="text-align: center; color: #10B981; font-weight: 600; letter-spacing: 0.5px;">MASTER ROUTING ENGINE (v34.0)</p>', unsafe_allow_html=True)
+st.markdown('<p style="text-align: center; color: #10B981; font-weight: 600; letter-spacing: 0.5px;">MASTER ROUTING ENGINE (v35.0)</p>', unsafe_allow_html=True)
 st.write("---")
-
-# 🔑 भाई, बस इस नीचे वाली लाइन में अपनी असली पूरी RapidAPI Key पेस्ट कर देना:
-HARDCODED_API_KEY = "यहाँ_अपनी_रैपिड_एपीआई_की_डालें"
 
 # 🧠 साइलेंट बैकग्राउंड लॉगिन इंजन
 if "saved_key" not in st.session_state:
     st.session_state.saved_key = HARDCODED_API_KEY
 
-if HARDCODED_API_KEY != "यहाँ_अपनी_रैपिड_एपीआई_की_डालें":
+if HARDCODED_API_KEY != "यहाँ_अपनी_चाबी_पेस्ट_करें" and HARDCODED_API_KEY.strip() != "":
     st.session_state.api_connected = True
 else:
     st.session_state.api_connected = False
 
-# इमरजेंसी बैकअप सेटिंग्स साइडबार में लॉक है (मोबाइल पर छुपा रहेगा)
+# इमरजेंसी बैकअप सेटिंग्स साइडबार में लॉक है
 with st.sidebar:
     st.markdown("### ⚙️ Emergency Server Config")
     backup_key = st.text_input("Edit API Key if needed:", type="password", value=st.session_state.saved_key)
@@ -29,23 +32,23 @@ with st.sidebar:
         st.session_state.saved_key = backup_key
         st.session_state.api_connected = True
 
-# 🗺️ 2. Main Input Screen Layout
+# 🗺 *२. मुख्य इनपुट स्क्रीन लेआउट*
 col1, col2 = st.columns(2)
 with col1: origin_input = st.text_input("📍 Boarding Station (Source):", "Bijainagar")
 with col2: dest_input = st.text_input("🏁 Destination Station:", "Delhi")
 
-# 📅 3. Interactive Month Calendar Selector
+# 📅 *३. इंटरैक्टिव मंथ कैलेंडर*
 formatted_date = datetime.date.today()
 travel_date = st.date_input("📅 Select Travel Date (Month Calendar View):", value=formatted_date)
 
 st.write("")
 
-# 🚂 4. Master AI Processing Engine (मुख्य बटन)
+# 🚂 *४. मास्टर एआई प्रोसेसिंग इंजन (मुख्य बटन)*
 if st.button("🔥 AI One-Click Master Route Decode", use_container_width=True):
     if not origin_input or not dest_input:
         st.error("❌ Error: Both station names are required!")
     elif not st.session_state.api_connected:
-        st.error("⚠️ Error: Background Auto-Login failed! Please check your hardcoded API key in GitHub code line 13.")
+        st.error("⚠️ Error: Background Auto-Login failed! Please check that you have pasted your real API key in GitHub code line 7.")
     else:
         src = origin_input.upper().strip()
         dest = dest_input.upper().strip()
@@ -75,7 +78,7 @@ if st.button("🔥 AI One-Click Master Route Decode", use_container_width=True):
         
         st.write("")
         
-        # 💎 Route Details Layout (High Contrast Premium Cards)
+        # 💎 Route Details Layout
         c1, c2 = st.columns(2)
         with c1:
             st.markdown(f"""
@@ -108,5 +111,4 @@ if st.button("🔥 AI One-Click Master Route Decode", use_container_width=True):
             st.caption(f"💺 Class: {sec2_class} | **Availability: {sec2_seats}**")
             
         st.write("")
-        # 💡 Professional AI Guide Box
         st.info(f"💡 **Professional AI Guide:** Direct travel on {date_string} from {src} to {dest} is fully booked. This dynamic blueprint routes you via Jaipur (JP). Connection timings are perfectly synced to ensure a smooth transition and a 100% confirmed journey!")
