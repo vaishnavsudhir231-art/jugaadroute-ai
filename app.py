@@ -14,13 +14,13 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 st.markdown('<div class="big-title">🚀 JugaadRoute AI</div>', unsafe_allow_html=True)
-st.markdown('<div class="sub-title">गूगल शीट्स लाइव-सिंक्ड क्लाउड इंजन (v8.0 - iPhone Edition)</div>', unsafe_allow_html=True)
+st.markdown('<div class="sub-title">गूगल शीट्स लाइव-सिंक्ड क्लाउड इंजन (v8.1 - Smart Clean)</div>', unsafe_allow_html=True)
 st.write("---")
 
 # 🔗 आपकी लाइव गूगल शीट का सीक्रेट CSV एक्सपोर्ट लिंक
 SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/1-jXLlMbfbGa36NgrV4qxIvuB1-tj2Ssr6YUky-y0T04/export?format=csv"
 
-# 🚉 ऑल इंडिया मुख्य स्टेशनों की मास्टर लिस्ट (आपकी शीट के स्टेशन्स इसमें अपने आप जुड़ जाएंगे)
+# 🚉 ऑल इंडिया मुख्य स्टेशनों की मास्टर लिस्ट
 ALL_INDIA_STATIONS = [
     "Bijainagar (BJNR)", "Ajmer (AII)", "Jaipur (JP)", "Delhi (DLI)", "New Delhi (NDLS)", 
     "Ahmedabad (ADI)", "Bhilwara (BHL)", "Kota (KOTA)", "Chittorgarh (COR)", "Kapasan (KIN)", 
@@ -30,14 +30,21 @@ ALL_INDIA_STATIONS = [
     "KSR Bengaluru (SBC)", "Pune Jn (PUNE)", "Hyderabad (HYB)", "Chennai Central (MAS)"
 ]
 
-# गूगल शीट से लाइव डेटा लोड करना (हर 10 सेकंड में खुद फ्रेश होगा)
+# 🧹 छिपे हुए भूतिया कैरेक्टर्स और स्पेस को साफ़ करने का जादुई फ़ंक्शन
+def clean_val(v):
+    if pd.isna(v): return ""
+    return str(v).strip().replace('\u200b', '').replace('\u2060', '')
+
+# गूगल शीट से लाइव डेटा लोड करना
 @st.cache_data(ttl=10)  
 def load_live_data():
     try:
         df = pd.read_csv(SHEET_CSV_URL)
-        df.columns = [c.strip() for c in df.columns]  # कॉलम के स्पेस साफ़ करना
+        df.columns = [clean_val(c) for c in df.columns]
         return df
     except Exception as e:
+        st.error(f"⚠️ गूगल शीट रीड करने में दिक्कत आ रही है: {e}")
+        st.info("💡 अगर ऊपर 403 या Unauthorized एरर दिखे, तो अपनी Google Sheet में जाकर 'Share' -> 'General Access' को 'Anyone with the link' पर सेट कर देना भाई।")
         return None
 
 df_routes = load_live_data()
@@ -48,9 +55,12 @@ dynamic_stations = set()
 if df_routes is not None and not df_routes.empty:
     for _, row in df_routes.iterrows():
         try:
-            src = str(row["Source"]).strip()
-            dest = str(row["Destination"]).strip()
+            src = clean_val(row["Source"])
+            dest = clean_val(row["Destination"])
             
+            if not src or not dest:
+                continue
+                
             dynamic_stations.add(src)
             dynamic_stations.add(dest)
             
@@ -63,8 +73,13 @@ if df_routes is not None and not df_routes.empty:
             except: t_fare = 0
                 
             MASTER_ROUTES[src][dest] = {
-                "hub": str(row["Hub"]), "dist": str(row["Distance"]), "bus": b_fare, "train": t_fare, "time": str(row["Time"]),
-                "train_list": [t.strip() for t in str(row["Trains"]).split(",")], "trick": str(row["Trick"])
+                "hub": clean_val(row["Hub"]), 
+                "dist": clean_val(row["Distance"]), 
+                "bus": b_fare, 
+                "train": t_fare, 
+                "time": clean_val(row["Time"]),
+                "train_list": [clean_val(t) for t in str(row["Trains"]).split(",") if t.strip()], 
+                "trick": clean_val(row["Trick"])
             }
         except:
             pass
@@ -73,7 +88,7 @@ if df_routes is not None and not df_routes.empty:
 final_station_set = set(ALL_INDIA_STATIONS).union(dynamic_stations)
 station_list = sorted(list(final_station_set))
 
-# 2. स्मार्ट इनपुट फ़ील्ड्स (सर्च बार के साथ)
+# 2. स्मार्ट इनपुट फ़ील्ड्स
 col1, col2 = st.columns(2)
 with col1:
     origin = st.selectbox("📍 आपकी वर्तमान लोकेशन (Source):", station_list, index=station_list.index("Bijainagar (BJNR)") if "Bijainagar (BJNR)" in station_list else 0)
@@ -85,16 +100,13 @@ travel_preference = st.radio("🎛️ अपनी यात्रा की श
 # 3. कोर एआई राउटिंग एल्गोरिदम
 if st.button("🔥 एआई स्मार्ट रूट जनरेट करो", use_container_width=True):
     
-    with st.spinner("📊 लाइव गूगल शीट से डेटा सिंक हो रहा है..."):
-        time.sleep(0.4)
-        
     if origin == destination:
         st.error("❌ भाई, दोनों स्टेशन सेम हैं! आप अपनी ही लोकेशन पर खड़े हैं।")
         
     elif origin in MASTER_ROUTES and destination in MASTER_ROUTES[origin]:
         data = MASTER_ROUTES[origin][destination]
         train_fare_val = data["train"]
-        trip_time = data["time"]
+        trip_time = data["time"] if data["time"] else "8 Hrs"
         
         if "AC Premium Combo" in travel_preference:
             train_fare_val += 450
@@ -110,7 +122,7 @@ if st.button("🔥 एआई स्मार्ट रूट जनरेट क
         with m2:
             st.markdown(f"<div class='metric-box'>⏱️ <b>कुल समय</b><br><span style='font-size:20px; color:#3B82F6; font-weight:bold;'>{trip_time}</span></div>", unsafe_allow_html=True)
         with m3:
-            st.markdown(f"<div class='metric-box'>🛣️ <b>नजदीकी हब</b><br><span style='font-size:20px; color:#F59E0B; font-weight:bold;'>{data['hub']}</span></div>", unsafe_allow_html=True)
+            st.markdown(f"<div class='metric-box'>🛣️ <b>नजदीकी हब</b><br><span style='font-size:20px; color:#F59E0B; font-weight:bold;'>{data['hub'] if data['hub'] else 'Ajmer'}</span></div>", unsafe_allow_html=True)
 
         st.write("")
         st.write("---")
@@ -121,13 +133,14 @@ if st.button("🔥 एआई स्मार्ट रूट जनरेट क
             st.write(f"**एआई स्ट्रेटेजी:** {data['trick']}")
         with tab2:
             st.info(f"### 🚌 रोड + रेल कनेक्टिंग रूट डिटेल्स")
-            st.write(f"1. **लोकल बस/टैक्सी:** {origin} से {data['hub']} जाएँ। (किराया: ~₹{data['bus']})")
-            st.write(f"2. **मुख्य ट्रेन:** {data['hub']} स्टेशन पहुंचकर इनमें से कोई ट्रेन लें:")
-            for train in data["train_list"]:
-                st.write(f"   - 🚂 **{train}**")
+            st.write(f"1. **लोकल बस/टैक्सी:** {origin} से {data['hub'] if data['hub'] else 'Ajmer'} जाएँ।")
+            if data['train_list']:
+                st.write(f"2. **मुख्य ट्रेन:** स्टेशन पहुंचकर इनमें से कोई ट्रेन लें:")
+                for train in data["train_list"]:
+                    st.write(f"   - 🚂 **{train}**")
         with tab3:
             st.warning("### ⚠️ यात्रा से पहले यह ध्यान रखें")
             st.write("- **करंट बुकिंग:** ट्रेन रवाना होने से ठीक 4 घंटे पहले IRCTC ऐप पर 'Current Available' सीट जरूर चेक करें।")
             
     else:
-        st.error(f"❌ इस रूट का जुगाड़ अभी दर्ज नहीं है! अपने iPhone पर 'Google Sheets' ऐप खोलें और {origin} से {destination} की नई एंट्री डालें। वह तुरंत यहाँ लाइव दिखने लगेगी!")
+        st.error(f"❌ इस रूट का जुगाड़ अभी लाइव ऐप में सिंक नहीं हुआ है! कृपया सुनिश्चित करें कि आपकी गूगल शीट में डेटा सेव हो चुका है और पेज को एक बार रिफ्रेश करें।")
