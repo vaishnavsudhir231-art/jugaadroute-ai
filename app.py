@@ -13,8 +13,6 @@ API_HEADERS = {
 
 def fetch_live_trains(source, destination, date_str):
     """पैटर्न: लाइव एपीआई से दो स्टेशनों के बीच की सभी ट्रेनें लाना"""
-    # [अपनी असली API का एंडपॉइंट यहाँ मैप करें]
-    # उदाहरण के लिए एक मॉक डेटा रिटर्न कर रहे हैं ताकि कोड तुरंत काम करे
     if source == "BIJAINAGAR" and destination == "DELHI":
         return [{"train_no": "20474", "train_name": "CHETAK EXPRESS", "dep_time": "20:50", "arr_time": "05:05", "days": "M T W T F S S"}]
     return [] 
@@ -32,7 +30,6 @@ def fetch_train_route_with_types(train_no):
 
 def fetch_live_seat_status(train_no, source, destination, date_str):
     """पैटर्न: लाइव सीट काउंट लाना (जीरो फिल्टर पॉलिसी: 1 सीट भी होगी तो उठाएगा)"""
-    # यहाँ आपकी लाइव एपीआई का रिस्पॉन्स आएगा
     if train_no == "20474" and source == "BIJAINAGAR" and destination == "DELHI":
         return {"SL": {"seats": 3, "status": "AVAILABLE", "price": 310}, "3A": {"seats": 9, "status": "AVAILABLE", "price": 785}}
     return {"SL": {"seats": 15, "status": "AVAILABLE", "price": 200}, "3A": {"seats": 8, "status": "AVAILABLE", "price": 600}}
@@ -71,7 +68,6 @@ def SUPER_INTELLIGENT_ROUTER(src, dest, travel_date):
             idx_dest = station_codes.index(dest)
             midpoint_stations = full_route[idx_src + 1 : idx_dest]
             
-            # तुम्हारी शर्त: पहले बड़ा जंक्शन (Tier-1), फिर छोटा स्टेशन (Tier-2)
             major_junctions = [m["station_code"] for m in midpoint_stations if m.get("is_junction") == True]
             small_stations = [m["station_code"] for m in midpoint_stations if m.get("is_junction") != True]
             ordered_midpoints = major_junctions + small_stations
@@ -94,7 +90,6 @@ def SUPER_INTELLIGENT_ROUTER(src, dest, travel_date):
                         "leg2_seats": leg2_seats
                     })
 
-    # 🔥 तुम्हारी सबसे क्रिटिकल कंडीशन: अगर सेम ट्रेन में जुगाड़ मिल गया, तो दूसरी ट्रेन सर्च मत करो!
     if final_output["same_train_split_options"]:
         final_output["api_saved_log"] = "Same train options found. Skipped connecting trains to save API limits."
         return final_output
@@ -125,15 +120,14 @@ def SUPER_INTELLIGENT_ROUTER(src, dest, travel_date):
     return final_output
 
 # ==============================================================================
-# 3. PREMIUM USER INTERFACE (UI) - पहले जैसा खूबसूरत डिजाइन
+# 3. PREMIUM USER INTERFACE (UI)
 # ==============================================================================
 st.set_page_config(page_title="IRCTC Premium Intelligent Router", layout="centered")
 
-# हेडर डिजाइन
-st.markdown("<h2 style='text-align: center; color: #1E88E5;'>🚂 Smart Train Route Finder</h2>", unsafe_input_html=True)
+# हेडर डिजाइन - यहाँ पर 'unsafe_allow_html=True' को सही कर दिया गया है
+st.markdown("<h2 style='text-align: center; color: #1E88E5;'>🚂 Smart Train Route Finder</h2>", unsafe_allow_html=True)
 st.write("---")
 
-# सर्च बॉक्स डिजाइन
 col_src, col_dst = st.columns(2)
 with col_src:
     src_input = st.text_input("From Station Code", value="BIJAINAGAR").upper().strip()
@@ -149,7 +143,7 @@ if st.button("Search Trains", type="primary", use_container_width=True):
             
         st.write("---")
         
-        # 🟢 DISPLAY DIRECT TRAINS (प्रायोरिटी 1)
+        # 🟢 DISPLAY DIRECT TRAINS
         if res["direct_options"]:
             st.subheader(f"🟢 Direct Trains Found ({len(res['direct_options'])})")
             for train in res["direct_options"]:
@@ -157,7 +151,6 @@ if st.button("Search Trains", type="primary", use_container_width=True):
                     st.markdown(f"### **{train['train_no']} - {train['train_name']}**")
                     st.caption(f"Departs: {train['dep_time']} from {src_input} | Arrives: {train['arr_time']} at {dst_input}")
                     
-                    # सीटों को ग्रिड में दिखाना (Metrics Style)
                     cols = st.columns(len(train["live_seats"]))
                     for i, (cls_name, cls_info) in enumerate(train["live_seats"].items()):
                         with cols[i]:
@@ -167,7 +160,7 @@ if st.button("Search Trains", type="primary", use_container_width=True):
                             )
             st.write("---")
 
-        # 🔄 DISPLAY SAME-TRAIN SPLITS (प्रायोरिटी 2)
+        # 🔄 DISPLAY SAME-TRAIN SPLITS
         if res["same_train_split_options"]:
             st.subheader(f"🔄 Same-Train Seat Splitting Options ({len(res['same_train_split_options'])})")
             st.info("💡 खुशखबरी: आपको ट्रेन बदलने की जरूरत नहीं है! आप इसी सेम ट्रेन में बीच के स्टेशन पर अपनी सीट बदल सकते हैं।")
@@ -188,7 +181,7 @@ if st.button("Search Trains", type="primary", use_container_width=True):
                             st.text(f"• {cls}: {info['status']}-{info['seats']:04d} (₹{info['price']})")
             st.write("---")
 
-        # 🔀 DISPLAY DIFFERENT TRAIN SPLITS (प्रायोरिटी 3 - फॉलबैक)
+        # 🔀 DISPLAY DIFFERENT TRAIN SPLITS
         if res["different_train_split_options"]:
             st.subheader(f"🔀 Alternate Connecting Routes ({len(res['different_train_split_options'])})")
             for route in res["different_train_split_options"]:
@@ -203,6 +196,5 @@ if st.button("Search Trains", type="primary", use_container_width=True):
                         st.markdown(f"**ट्रेन 2:** {route['t2']['train_name']} ({route['t2']['train_no']})")
                         st.caption(f"{route['transit_hub']} ({route['t2']['dep_time']}) ➔ {dst_input} ({route['t2']['arr_time']})")
 
-        # ⚠️ अगर कुछ भी नहीं मिला
         if not res["direct_options"] and not res["same_train_split_options"] and not res["different_train_split_options"]:
             st.error("❌ माफी चाहते हैं, इस तारीख पर किसी भी रूट या ट्रेन में कोई भी सीट उपलब्ध नहीं है।")
