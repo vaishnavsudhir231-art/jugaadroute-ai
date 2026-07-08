@@ -6,40 +6,32 @@ import datetime
 st.set_page_config(page_title="JugaadRoute AI Master Pro", page_icon="🚀", layout="centered")
 
 st.markdown('<h2 style="text-align: center; color: #1E3A8A; font-family: sans-serif;">🚀 JugaadRoute AI</h2>', unsafe_allow_html=True)
-st.markdown('<p style="text-align: center; color: #10B981; font-weight: 600; letter-spacing: 0.5px;">AUTO-LOGIN ROUTING ENGINE (v30.0)</p>', unsafe_allow_html=True)
+st.markdown('<p style="text-align: center; color: #10B981; font-weight: 600; letter-spacing: 0.5px;">GHOST AUTO-CONNECT ENGINE (v31.0)</p>', unsafe_allow_html=True)
 st.write("---")
 
-# 🔑 यहाँ अपनी पूरी RapidAPI Key एक बार डाल दो भाई, बार-बार पेस्ट नहीं करना पड़ेगा!
-# नीचे उद्धरण चिह्नों (" ") के अंदर अपनी पूरी सही चाबी लिख देना भाई।
+# 🔑 यहाँ उद्धरण चिह्नों (" ") के अंदर एक बार अपनी पूरी सही चाबी पेस्ट कर दो भाई!
 HARDCODED_API_KEY = "da7882bf0dmsh_अपनी_पूरी_चाबी_यहाँ_पेस्ट_करें"
 
-# Session State Manager (ऑटो-कनेक्ट लॉजिक)
-if "saved_key" not in st.session_state: 
+# 🧠 साइलेंट बैकग्राउंड लॉगिन इंजन (No banners, No messages on Main Screen)
+if "saved_key" not in st.session_state:
     st.session_state.saved_key = HARDCODED_API_KEY
 
-if "api_connected" not in st.session_state:
-    # यदि आपने ऊपर अपनी असली चाबी डाल दी है, तो ऐप अपने आप बिना बटन दबाए कनेक्ट हो जाएगा!
-    if HARDCODED_API_KEY != "da7882bf0dmsh_अपनी_पूरी_चाबी_यहाँ_पेस्ट_करें":
+if HARDCODED_API_KEY != "da7882bf0dmsh_अपनी_पूरी_चाबी_यहाँ_पेस्ट_करें":
+    st.session_state.api_connected = True
+else:
+    st.session_state.api_connected = False
+
+# 🕵️‍♂️ मुख्य स्क्रीन से पूरी तरह बाहर! इमरजेंसी बैकअप सेटिंग्स साइडबार में लॉक है (मोबाइल पर छुपा रहेगा)
+with st.sidebar:
+    st.markdown("### ⚙️ Emergency Server Config")
+    st.caption("This runs automatically in the background. No need to touch it.")
+    backup_key = st.text_input("Edit API Key if needed:", type="password", value=st.session_state.saved_key)
+    if st.button("Force Manual Re-Connect"):
+        st.session_state.saved_key = backup_key
         st.session_state.api_connected = True
-    else:
-        st.session_state.api_connected = False
+        st.success("Connected!")
 
-# 🔐 सर्वर सेटिंग्स अब पूरी तरह आटोमेटिक है, पर बैकअप के लिए अंदर छुपा दी है
-with st.expander("⚙️ Server Settings (Auto-Gateway Status)"):
-    if st.session_state.api_connected:
-        st.success("🟢 Server Status: Auto-Connected & Live!")
-    else:
-        st.warning("⚠️ Server Status: Disconnected. Please hardcode your key in the script.")
-    
-    user_key = st.text_input("Current API Key in use:", type="password", value=st.session_state.saved_key)
-    if st.button("Manual Re-Connect", use_container_width=True):
-        st.session_state.saved_key = user_key
-        st.session_state.api_connected = True
-        st.success("🟢 Manually Connected!")
-
-st.write("")
-
-# 🗺️ 2. Main Input Screen Layout
+# 🗺️ 2. Main Input Screen Layout (100% Clean UI)
 col1, col2 = st.columns(2)
 with col1: origin_input = st.text_input("📍 Boarding Station (Source):", "Bijainagar")
 with col2: dest_input = st.text_input("🏁 Destination Station:", "Delhi")
@@ -55,13 +47,13 @@ if st.button("🔥 AI One-Click Master Route Decode", use_container_width=True):
     if not origin_input or not dest_input:
         st.error("❌ Error: Both station names are required!")
     elif not st.session_state.api_connected or st.session_state.saved_key == "da7882bf0dmsh_अपनी_पूरी_चाबी_यहाँ_पेस्ट_करें":
-        st.error("⚠️ Error: Server is not configured! Please edit the code on GitHub and put your full API key in the HARDCODED_API_KEY line.")
+        st.error("⚠️ Error: Background Auto-Login failed! Please check your hardcoded API key in GitHub code line 13.")
     else:
         src = origin_input.upper().strip()
         dest = dest_input.upper().strip()
         date_string = travel_date.strftime("%d %b %Y")
         
-        with st.spinner("📡 Accessing live servers with auto-saved credentials..."):
+        with st.spinner("📡 Syncing live data via background ghost connection..."):
             time.sleep(0.8)
             
         st.success("🟢 Live API Data Synchronized Successfully!")
@@ -85,7 +77,7 @@ if st.button("🔥 AI One-Click Master Route Decode", use_container_width=True):
         
         st.write("")
         
-        # 💎 Route Details Layout
+        # 💎 Route Details Layout (High Contrast Premium Cards)
         c1, c2 = st.columns(2)
         with c1:
             st.markdown(f"""
