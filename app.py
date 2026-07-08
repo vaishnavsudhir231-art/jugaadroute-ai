@@ -6,17 +6,17 @@ import datetime
 st.set_page_config(page_title="JugaadRoute AI Master Pro", page_icon="🚀", layout="centered")
 
 st.markdown('<h2 style="text-align: center; color: #1E3A8A; font-family: sans-serif;">🚀 JugaadRoute AI</h2>', unsafe_allow_html=True)
-st.markdown('<p style="text-align: center; color: #10B981; font-weight: 600; letter-spacing: 0.5px;">MASTER ROUTING ENGINE (v33.0)</p>', unsafe_allow_html=True)
+st.markdown('<p style="text-align: center; color: #10B981; font-weight: 600; letter-spacing: 0.5px;">MASTER ROUTING ENGINE (v34.0)</p>', unsafe_allow_html=True)
 st.write("---")
 
-# 🔑 अपनी पूरी RapidAPI Key यहाँ उद्धरण चिह्नों (" ") के अंदर एक बार डाल दो भाई!
-HARDCODED_API_KEY = "da7882bf0dmsh_अपनी_पूरी_चाबी_यहाँ_पेस्ट_करें"
+# 🔑 भाई, बस इस नीचे वाली लाइन में अपनी असली पूरी RapidAPI Key पेस्ट कर देना:
+HARDCODED_API_KEY = "यहाँ_अपनी_रैपिड_एपीआई_की_डालें"
 
-# 🧠 साइलेंट बैकग्राउंड लॉगिन इंजन (No API buttons on screen)
+# 🧠 साइलेंट बैकग्राउंड लॉगिन इंजन
 if "saved_key" not in st.session_state:
     st.session_state.saved_key = HARDCODED_API_KEY
 
-if HARDCODED_API_KEY != "da7882bf0dmsh_अपनी_पूरी_चाबी_यहाँ_पेस्ट_करें":
+if HARDCODED_API_KEY != "यहाँ_अपनी_रैपिड_एपीआई_की_डालें":
     st.session_state.api_connected = True
 else:
     st.session_state.api_connected = False
@@ -40,11 +40,11 @@ travel_date = st.date_input("📅 Select Travel Date (Month Calendar View):", va
 
 st.write("")
 
-# 🚂 4. Master AI Processing Engine (बटन की वापसी! 🙌)
+# 🚂 4. Master AI Processing Engine (मुख्य बटन)
 if st.button("🔥 AI One-Click Master Route Decode", use_container_width=True):
     if not origin_input or not dest_input:
         st.error("❌ Error: Both station names are required!")
-    elif not st.session_state.api_connected or st.session_state.saved_key == "da7882bf0dmsh_अपनी_पूरी_चाबी_यहाँ_पेस्ट_करें":
+    elif not st.session_state.api_connected:
         st.error("⚠️ Error: Background Auto-Login failed! Please check your hardcoded API key in GitHub code line 13.")
     else:
         src = origin_input.upper().strip()
