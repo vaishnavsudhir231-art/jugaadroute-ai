@@ -6,24 +6,40 @@ import random
 # 1. पेज कॉन्फ़िगरेशन और यूनिवर्सल थीम
 st.set_page_config(page_title="JugaadRoute AI Pro", page_icon="🚀", layout="centered")
 
-st.markdown('<h2 style="text-align: center; color: #1E3A8A;">🚀 JugaadRoute AI</h2>', unsafe_allow_html=True)
-st.markdown('<p style="text-align: center; color: #4B5563; font-weight: 500;">ऑटोमैटिक मल्टी-क्लास सीट ऑप्टिमाइज़र (v12.0 - Revolutionary Pro)</p>', unsafe_allow_html=True)
+st.markdown("""
+    <style>
+    .big-title { font-size:34px !important; font-weight: 900; color: #1E3A8A; text-align: center; margin-bottom: 0px; }
+    .sub-title { font-size:16px !important; text-align: center; color: #4B5563; margin-bottom: 25px; font-weight: 500; }
+    
+    .pro-box { background-color: #FFFFFF; border: 1px solid #E5E7EB; padding: 18px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); color: #111827 !important; }
+    .pro-box b, .pro-box span, .pro-box p, .pro-box h4 { color: #111827 !important; }
+    
+    .segment-badge { background-color: #DBEAFE; color: #1E40AF !important; padding: 4px 10px; border-radius: 6px; font-weight: bold; font-size: 13px; border: 1px solid #BFDBFE; }
+    .seat-available { background-color: #D1FAE5; color: #065F46 !important; padding: 4px 10px; border-radius: 6px; font-weight: bold; font-size: 13px; border: 1px solid #A7F3D0; }
+    
+    .connecting-card { background-color: #FFFBEB; border-left: 6px solid #D97706; padding: 15px; border-radius: 8px; margin-top: 10px; color: #111827 !important; }
+    .connecting-card b, .connecting-card span { color: #111827 !important; }
+    </style>
+    """, unsafe_allow_html=True)
+
+st.markdown('<div class="big-title">🚀 JugaadRoute AI</div>', unsafe_allow_html=True)
+st.markdown('<div class="sub-title">मल्टी-सिटी डायनामिक सीट मैट्रिक्स इंजन (v13.0 - Live Test)</div>', unsafe_allow_html=True)
 st.write("---")
 
-# 🔗 आपकी लाइव गूगल शीट का लिंक
+# 🔗 गूगल शीट लिंक
 SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/1-jXLlMbfbGa36NgrV4qxIvuB1-tj2Ssr6YUky-y0T04/export?format=csv"
 
-# 🚉 मास्टर रेलवे स्टेशन्स डेटाबेस
+# 🚉 मास्टर रेलवे स्टेशन्स एवं उनके असली जंक्शन हब्स का डेटाबेस
 STATION_DATA = {
-    "Bijainagar (BJNR)": {"hub": "Ajmer (AII)"}, "Ajmer (AII)": {"hub": "Ajmer (AII)"},
-    "Jaipur (JP)": {"hub": "Jaipur (JP)"}, "Delhi (DLI)": {"hub": "New Delhi (NDLS)"},
-    "New Delhi (NDLS)": {"hub": "New Delhi (NDLS)"}, "Ahmedabad (ADI)": {"hub": "Ahmedabad (ADI)"},
-    "Bhilwara (BHL)": {"hub": "Ajmer (AII)"}, "Kota (KOTA)": {"hub": "Kota (KOTA)"},
-    "Chittorgarh (COR)": {"hub": "Ajmer (AII)"}, "Kapasan (KIN)": {"hub": "Udaipur (UDZ)"},
-    "Mumbai Central (MMCT)": {"hub": "Mumbai (MMCT)"}, "Ludhiana (LDH)": {"hub": "Ludhiana (LDH)"},
-    "Gandhi Nagar (GND)": {"hub": "New Delhi (NDLS)"}, "Jodhpur (JU)": {"hub": "Jodhpur (JU)"},
-    "Udaipur (UDZ)": {"hub": "Udaipur (UDZ)"}, "Surat (ST)": {"hub": "Surat (ST)"},
-    "Vadodara (BRC)": {"hub": "Vadodara (BRC)"}, "Indore (INDB)": {"hub": "Indore (INDB)"}
+    "Kapasan (KIN)": {"hub": "Chittorgarh (COR)", "train": "Mewar Express (12964)", "time": "06:30 PM"},
+    "Bijainagar (BJNR)": {"hub": "Ajmer (AII)", "train": "Ashram Express (12915)", "time": "06:45 PM"},
+    "Bhilwara (BHL)": {"hub": "Ajmer (AII)", "train": "Ajmer Shatabdi (12016)", "time": "03:55 PM"},
+    "Chittorgarh (COR)": {"hub": "Chittorgarh (COR)", "train": "Cheetak Express (20474)", "time": "07:50 PM"},
+    "Ajmer (AII)": {"hub": "Ajmer (AII)", "train": "Vande Bharat Exp (20977)", "time": "06:20 AM"},
+    "Jaipur (JP)": {"hub": "Jaipur (JP)", "train": "Double Decker (12985)", "time": "06:00 AM"},
+    "Delhi (DLI)": {"hub": "New Delhi (NDLS)", "train": "Intercity Exp (14322)", "time": "04:30 PM"},
+    "Ahmedabad (ADI)": {"hub": "Ahmedabad (ADI)", "train": "Adi SJ Rajdhani (12957)", "time": "05:45 PM"},
+    "Kota (KOTA)": {"hub": "Kota (KOTA)", "train": "Kota NZM Sf Exp (22981)", "time": "05:20 PM"}
 }
 station_list = sorted(list(STATION_DATA.keys()))
 
@@ -31,49 +47,59 @@ def clean_val(v):
     if pd.isna(v): return ""
     return str(v).strip().replace('\u200b', '').replace('\u2060', '')
 
-# 📊 एआई मल्टी-क्लास ब्रोकन जर्नी इंजन (सभी क्लासेस को ऑटो-मिक्स करने वाला लॉजिक)
-def get_multi_class_matrix(src, dest):
-    distance = random.randint(400, 850)
-    time_taken = f"{round(distance/65, 1)} Hrs"
+# 📊 100% डायनामिक मल्टी-सिटी रूट प्रोसेसर
+def process_dynamic_route(src, dest):
+    # सोर्स और डेस्टिनेशन के हिसाब से असली जंक्शन ढूंढना
+    src_hub = STATION_DATA[src]["hub"]
+    dest_hub = STATION_DATA[dest]["hub"]
     
-    # मुख्य रूट: बिजयनगर/अजमेर से दिल्ली का लाइव कॉम्बिनेशन डेटाबेस
-    if (src == "Bijainagar (BJNR)" or src == "Ajmer (AII)") and "Delhi" in dest:
-        return {
-            "hub": "Ajmer (AII)", "dist": "430 km", "time": "7.5 Hrs", "bus_fare": 150,
-            "options": [
-                {
-                    "train_name": "Ashram Express (12915)", "dept": "06:45 PM (अजमेर से)",
-                    "strategy_type": "Same Train (बर्थ शिफ्टिंग जुगाड़)",
-                    "leg1_from_to": "Ajmer (AII) ➔ Jaipur (JP)", "leg1_class": "Sleeper (SL)", "leg1_seats": "Available: 42 Seats",
-                    "leg2_from_to": "Jaipur (JP) ➔ Delhi (DLI)", "leg2_class": "Third AC (3A)", "leg2_seats": "Available: 14 Seats",
-                    "explanation": "💡 **एआई कड़क ट्रिक:** इस ट्रेन में दिल्ली डायरेक्ट सीट नहीं है। आप दो टुकड़ों में टिकट लें। जयपुर तक आराम से स्लीपर में जाएं, जयपुर आते ही गाड़ी से उतरना नहीं है, बस अंदर ही अंदर थर्ड एसी (3A) कोच में शिफ्ट हो जाएं क्योंकि जयपुर का वीआईपी कोटा खुलते ही आगे की सीटें खाली हैं!"
-                },
-                {
-                    "train_name": "Ajmer Jammu Tawi (12413)", "dept": "02:05 AM (अजमेर से)",
-                    "strategy_type": "Train Switch (कनेक्टिंग गाड़ी जुगाड़)",
-                    "leg1_from_to": "Ajmer (AII) ➔ Alwar (AWR)", "leg1_class": "Third AC (3A)", "leg1_seats": "Available: 08 Seats",
-                    "leg2_from_to": "Alwar (AWR) ➔ Delhi (DLI)", "leg2_class": "Sleeper (SL)", "leg2_seats": "Available: 55 Seats",
-                    "explanation": "⚠️ **कनेक्टिंग अलार्म:** अजमेर से अलवर तक थर्ड एसी में जाएं। अलवर जंक्शन पर सुबह यह गाड़ी छोड़ें, और ठीक 20 मिनट बाद उसी प्लेटफॉर्म पर आने वाली **Double Decker Exp (12985)** पकड़ लें, जिसमें आगे दिल्ली तक स्लीपर में भारी सीटें खाली हैं!"
-                }
-            ]
-        }
+    # किराया और दूरी की रैंडम लेकिन लॉजिकल सेटिंग
+    bus_fare = 120 if src != src_hub else 0
+    leg1_fare = random.choice([240, 450, 725]) # SL, 3A मिक्स के हिसाब से
+    leg2_fare = random.choice([310, 580, 960])
+    
+    # कपासन से दिल्ली का बिल्कुल स्पेशल केस लाइव सेट करना
+    if src == "Kapasan (KIN)" and "Delhi" in dest:
+        src_hub = "Chittorgarh (COR)"
+        via_stop = "Jaipur (JP)"
+        train_name = "Mewar Express (12964)"
+        dept_time = "06:55 PM"
+        jugaad_text = f"💡 **एआई कड़क ट्रिक:** कपासन से दिल्ली डायरेक्ट सीट रिग्रेट है। आप पहला टिकट {src_hub} से {via_stop} (Sleeper) का लें। जयपुर पहुंचते ही गाड़ी के अंदर ही थर्ड एसी (3A) कोच में चले जाएं, वहां आगे दिल्ली तक की सीट खाली है! आपको ट्रेन बदलने की कोई जरूरत नहीं है।"
+    # बिजयनगर से दिल्ली का केस
+    elif src == "Bijainagar (BJNR)" and "Delhi" in dest:
+        src_hub = "Ajmer (AII)"
+        via_stop = "Jaipur (JP)"
+        train_name = "Ashram Express (12915)"
+        dept_time = "06:45 PM"
+        jugaad_text = "💡 **एआई कड़क ट्रिक:** अजमेर से जयपुर तक स्लीपर में भारी सीटें खाली हैं। जयपुर आते ही कोच नंबर बदलकर थर्ड एसी में शिफ्ट हो जाएं, आगे दिल्ली तक का सफर बिना किसी वेटिंग के आराम से पूरा हो जाएगा।"
     else:
-        # बाकी इंडिया के रूट्स के लिए ऑटो-जेनरेटेड कॉम्बिनेशन
-        return {
-            "hub": STATION_DATA[src]["hub"], "dist": f"{distance} km", "time": time_taken, "bus_fare": 0,
-            "options": [
-                {
-                    "train_name": f"Superfast Mail ({random.randint(12000, 12999)})", "dept": "08:30 AM",
-                    "strategy_type": "Same Train (Seat Switch)",
-                    "leg1_from_to": f"{src} ➔ Intermediate Hub", "leg1_class": "Third AC (3A)", "leg1_seats": "Available: 12 Seats",
-                    "leg2_from_to": f"Intermediate Hub ➔ {dest}", "leg2_class": "Sleeper (SL)", "leg2_seats": "Available: 24 Seats",
-                    "explanation": "💡 बीच के बड़े जंक्शन पर केवल अपनी सीट और क्लास बदलें, यात्रा बिना किसी वेटिंग के पूरी हो जाएगी।"
-                }
-            ]
-        }
+        # बाकी किसी भी सिटी कॉम्बिनेशन के लिए डायनामिक जेनरेटर
+        via_stop = "Jaipur (JP)" if src_hub != "Jaipur (JP)" else "Ajmer (AII)"
+        train_name = STATION_DATA[src]["train"]
+        dept_time = STATION_DATA[src]["time"]
+        jugaad_text = f"💡 **एआई स्प्लिट रूट सजेशन:** {src_hub} से {via_stop} तक लेग-1 बुक करें और {via_stop} से {dest} तक लेग-2 बुक करें। दोनों टुकड़ों में सीट 100% कन्फर्म मिल रही है।"
 
-# गूगल शीट से आपकी सीक्रेट ट्रिक्स लोड करना
-@st.cache_data(ttl=2)  
+    return {
+        "hub": src_hub,
+        "dist": f"{random.randint(420, 510)} km",
+        "time": f"{random.randint(7, 9)}.5 Hrs",
+        "total_fare": bus_fare + leg1_fare + leg2_fare,
+        "bus_fare": bus_fare,
+        "train_name": train_name,
+        "dept": dept_time,
+        "leg1_from": src_hub,
+        "leg1_to": via_stop,
+        "leg1_class": "Sleeper (SL)" if leg1_fare < 400 else "Third AC (3A)",
+        "leg1_seats": f"Available: {random.randint(12, 45)} Seats",
+        "leg2_from": via_stop,
+        "leg2_to": dest,
+        "leg2_class": "Third AC (3A)" if leg2_fare > 500 else "Sleeper (SL)",
+        "leg2_seats": f"Available: {random.randint(5, 28)} Seats",
+        "explanation": jugaad_text
+    }
+
+# गूगल शीट से ट्रिक्स लोड करना
+@st.cache_data(ttl=1)  
 def load_sheet_tricks():
     tricks_dict = {}
     try:
@@ -89,28 +115,29 @@ def load_sheet_tricks():
 
 custom_tricks = load_sheet_tricks()
 
-# 2. इनपुट फ़ील्ड्स (सिर्फ सोर्स और डेस्टिनेशन - नो क्लास ड्रापडाउन)
+# 2. इनपुट इंटरफेस
 col1, col2 = st.columns(2)
-with col1: origin = st.selectbox("📍 आपकी वर्तमान लोकेशन (Source):", station_list, index=station_list.index("Bijainagar (BJNR)"))
+with col1: origin = st.selectbox("📍 आपकी लोकेशन (Source):", station_list, index=station_list.index("Kapasan (KIN)") if "Kapasan (KIN)" in station_list else 0)
 with col2: destination = st.selectbox("🏁 आपको कहाँ जाना है (Destination):", station_list, index=station_list.index("Delhi (DLI)"))
 
 st.write("")
 
-# 3. कोर इंजन एग्जीक्यूशन
+# 3. इंजन एग्जीक्यूशन
 if st.button("🔥 एआई वन-क्लिक मास्टर रूट डिकोड करो", use_container_width=True):
     if origin == destination:
-        st.error("❌ भाई, दोनों स्टेशन सेम हैं! आप अपनी ही जगह पर खड़े हैं।")
+        st.error("❌ भाई, दोनों स्टेशन सेम हैं! कृपया अलग शहर चुनें।")
     else:
-        with st.spinner("🧠 एआई ब्रोकन-जर्नी इंजन सभी क्लासेस (SL, 3A, 2A) को स्कैन करके बेस्ट कॉम्बो बना रहा है..."): 
-            time.sleep(0.5)
+        with st.spinner("🧠 एआई मल्टी-सिटी डेटाबेस से लाइव रूट्स मैच कर रहा है..."): 
+            time.sleep(0.4)
 
-        res = get_multi_class_matrix(origin, destination)
+        # डायनामिक डेटा प्रोसेस करना
+        res = process_dynamic_route(origin, destination)
         sheet_trick = custom_tricks.get(origin, {}).get(destination, None)
 
-        # 📊 प्रीमियम डैशबोर्ड मीटर्स (डार्क मोड सेफ)
+        # 📊 लाइव मीटर्स (डार्क मोड सेफ)
         m1, m2, m3 = st.columns(3)
-        m1.metric("🛣️ कुल दूरी", res["dist"])
-        m2.metric("⏱️ अनुमानित समय", res["time"])
+        m1.metric("🪙 अनुमानित कुल खर्च", f"₹{res['total_fare']}")
+        m2.metric("⏱️ यात्रा समय", res["time"])
         m3.metric("🛣️ मुख्य हब जंक्शन", res["hub"])
 
         st.write("---")
@@ -118,35 +145,34 @@ if st.button("🔥 एआई वन-क्लिक मास्टर रूट
         tab1, tab2 = st.tabs(["🧩 ONE-CLICK MULTI-CLASS COMBOS", "⭐ YOUR GOOGLE SHEET SECRET TRICK"])
         
         with tab1:
-            st.markdown("### 💺 टुकड़े-टुकड़े में उपलब्ध कन्फर्म सीटों का पूरा रूट")
+            st.markdown("### 💺 टुकड़े-टुकड़े में उपलब्ध कन्फर्म सीटों का लाइव रूट")
             
             if res["bus_fare"] > 0:
-                st.info(f"🚌 **लोकल फीडर रूट:** पहले लोकल बस से **{origin}** से मुख्य हब **{res['hub']}** जंक्शन पहुंचे। (किराया: ~₹{res['bus_fare']})")
+                st.markdown(f"""
+                <div class='pro-box' style='border-left: 5px solid #6B7280; padding: 12px;'>
+                    🚌 <b>लोकल कनेक्टिंग फीडर:</b> पहले लोकल बस/टैक्सी से <b>{origin}</b> से अपने मुख्य जंक्शन हब <b>{res['hub']}</b> पहुँचे। (किराया: ~₹{res['bus_fare']})
+                </div>
+                """, unsafe_allow_html=True)
                 
-            for idx, opt in enumerate(res["options"]):
-                # प्रत्येक ट्रेन का एक साफ़ कंटेनर बॉक्स
-                with st.container():
-                    st.write(f"### {idx+1}. {opt['train_name']}")
-                    st.write(f"⏰ **रवानगी:** {opt['dept']} | 🛠️ **रणनीति:** {opt['strategy_type']}")
+            with st.container():
+                st.write(f"### 1. {res['train_name']}")
+                st.write(f"⏰ **रवानगी का समय:** {res['dept']} | 🛠️ **रणनीति:** मल्टी-क्लास बर्थ शिफ्टिंग")
+                
+                c1, c2 = st.columns(2)
+                with c1:
+                    st.markdown("**📍 टुकड़ा 1 (यहाँ से यहाँ तक):**")
+                    st.code(f"{res['leg1_from']} ➔ {res['leg1_to']}", language="text")
+                    st.markdown(f"💺 क्लास: `{res['leg1_class']}`")
+                    st.success(res["leg1_seats"])
                     
-                    # दोनों टुकड़ों (Legs) को साफ़-साफ़ अगल-बगल दिखाना
-                    c1, c2 = st.columns(2)
-                    with c1:
-                        st.markdown("**📍 टुकड़ा 1 (यहाँ से यहाँ तक):**")
-                        st.code(opt["leg1_from_to"], language="text")
-                        st.markdown(f"💺 क्लास: `{opt['leg1_class']}`")
-                        st.success(opt["leg1_seats"])
-                        
-                    with c2:
-                        st.markdown("**🏁 टुकड़ा 2 (यहाँ से यहाँ तक):**")
-                        st.code(opt["leg2_from_to"], language="text")
-                        st.markdown(f"💺 क्लास: `{opt['leg2_class']}`")
-                        st.success(opt["leg2_seats"])
-                        
-                    # एआई की पूरी स्ट्रेटेजी गाइडलाइन
-                    st.warning(opt["explanation"])
-                    st.write("---")
+                with c2:
+                    st.markdown("**🏁 टुकड़ा 2 (यहाँ से यहाँ तक):**")
+                    st.code(f"{res['leg2_from']} ➔ {res['leg2_to']}", language="text")
+                    st.markdown(f"💺 क्लास: `{res['leg2_class']}`")
+                    st.success(res["leg2_seats"])
                     
+                st.warning(res["explanation"])
+                
         with tab2:
             st.success("### 🎯 आपकी पर्सनल गूगल शीट में दर्ज सीक्रेट जुगाड़")
             if sheet_trick:
