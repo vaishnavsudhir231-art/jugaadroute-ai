@@ -3,22 +3,28 @@ import time
 import pandas as pd
 import random
 
-# 1. प्रीमियम थीम सेटिंग्स
+# 1. प्रीमियम थीम सेटिंग्स और डार्क मोड फिक्स
 st.set_page_config(page_title="JugaadRoute AI", page_icon="🚀", layout="centered")
 
 st.markdown("""
     <style>
     .big-title { font-size:32px !important; font-weight: 800; color: #1E3A8A; text-align: center; margin-bottom: 0px; }
     .sub-title { font-size:16px !important; text-align: center; color: #6B7280; margin-bottom: 20px; }
-    .metric-box { background-color: #F3F4F6; padding: 12px; border-radius: 10px; text-align: center; box-shadow: 2px 2px 5px rgba(0,0,0,0.05); }
-    .live-card { background-color: #EFF6FF; border-left: 5px solid #3B82F6; padding: 15px; border-radius: 8px; margin-bottom: 10px; }
-    .seat-badge { background-color: #10B981; color: white; padding: 3px 8px; border-radius: 5px; font-weight: bold; font-size: 13px; }
-    .split-box { background-color: #FFFBEB; border: 1px dashed #F59E0B; padding: 15px; border-radius: 8px; margin-top: 10px; }
+    
+    /* 🎨 डार्क मोड में भी टेक्स्ट को साफ दिखाने का वीआईपी जुगाड़ */
+    .metric-box { background-color: #F3F4F6; padding: 12px; border-radius: 10px; text-align: center; box-shadow: 2px 2px 5px rgba(0,0,0,0.05); color: #1F2937 !important; }
+    .metric-box b, .metric-box span { color: #1F2937 !important; }
+    
+    .live-card { background-color: #EFF6FF; border-left: 5px solid #3B82F6; padding: 15px; border-radius: 8px; margin-bottom: 10px; color: #1F2937 !important; }
+    .live-card b, .live-card span, .live-card p { color: #1F2937 !important; }
+    
+    .split-box { background-color: #FFFBEB; border: 1px dashed #F59E0B; padding: 15px; border-radius: 8px; margin-top: 10px; color: #1F2937 !important; }
+    .split-box b, .split-box div, .split-box span { color: #1F2937 !important; }
     </style>
     """, unsafe_allow_html=True)
 
 st.markdown('<div class="big-title">🚀 JugaadRoute AI</div>', unsafe_allow_html=True)
-st.markdown('<div class="sub-title">एआई सीट मैट्रिक्स + स्प्लिट बुकिंग इंजन (v11.0 - BrokenJourney)</div>', unsafe_allow_html=True)
+st.markdown('<div class="sub-title">एआई सीट मैट्रिक्स + स्प्लिट बुकिंग इंजन (v11.1 - ColorFix)</div>', unsafe_allow_html=True)
 st.write("---")
 
 # 🔗 गूगल शीट का CSV लिंक
@@ -54,7 +60,6 @@ def clean_val(v):
 
 # 📊 एडवांस्ड एआई सीट और स्प्लिट रूट जनरेटर
 def generate_seat_matrix(src, dest):
-    # डिफॉल्ट वैल्यूज
     distance, duration = 450, "8 Hrs"
     trains_data = []
     split_info = {}
@@ -66,12 +71,11 @@ def generate_seat_matrix(src, dest):
             {"name": "Yoga Express (19031)", "time": "11:15 PM", "sl_seats": 0, "ac_seats": 2},
             {"name": "Ajmer Jammu Tawi (12413)", "time": "02:05 AM", "sl_seats": 32, "ac_seats": 11}
         ]
-        # बिजयनगर से दिल्ली के लिए स्पेशल स्प्लिट जुगाड़
         split_info = {
             "title": "🎯 आश्रम एक्सप्रेस (12915) स्प्लिट सीट मास्टर ट्रिक",
-            "leg1": "📍 लेग 1 (अजमेर से जयपुर): स्लीपर कोटा में अभी 14 सीटें खाली हैं। (टिकट बुक करें: Ajmer to Jaipur)",
-            "leg2": "📍 लेग 2 (जयपुर से दिल्ली): जयपुर स्टेशन आते ही सीट खाली हो जाएगी क्योंकि जयपुर का भारी कोटा खुलता है, जहाँ आगे 45 सीटें खाली हैं! (टिकट बुक करें: Jaipur to Delhi)",
-            "note": "💡 कैसे यात्रा करें: आपको ट्रेन बदलने की ज़रूरत नहीं है, बस जयपुर स्टेशन पर अपनी सीट नंबर बदलनी होगी। दोनों टिकट IRCTC से एक साथ बुक कर लें!"
+            "leg1": "अजमेर से जयपुर: स्लीपर कोटा में अभी 14 सीटें खाली हैं। (टिकट बुक करें: Ajmer to Jaipur)",
+            "leg2": "जयपुर से दिल्ली: जयपुर स्टेशन आते ही सीट खाली हो जाएगी क्योंकि जयपुर का भारी कोटा खुलता है, जहाँ आगे 45 सीटें खाली हैं! (टिकट बुक करें: Jaipur to Delhi)",
+            "note": "आपको ट्रेन बदलने की ज़रूरत नहीं है, बस जयपुर स्टेशन पर अपनी सीट नंबर बदलनी होगी। दोनों टिकट IRCTC से एक साथ बुक कर लें!"
         }
     elif "Ajmer" in src and "Delhi" in dest:
         distance, duration = 375, "6.5 Hrs"
@@ -81,12 +85,11 @@ def generate_seat_matrix(src, dest):
         ]
         split_info = {
             "title": "🎯 अजमेर-दिल्ली वंदे भारत सीट जुगाड़",
-            "leg1": "📍 लेग 1 (अजमेर से अलवर): चेयर कार में सीट उपलब्ध है।",
-            "leg2": "📍 लेग 2 (अलवर से दिल्ली): अलवर से आगे का टिकट काउंटर से करंट कोटे में लें, 100% कन्फर्म सीट मिलेगी।",
-            "note": "💡 टिप: अगर डायरेक्ट वेटिंग है, तो अलवर या रेवाड़ी को ब्रेक-पॉइंट बनाकर टिकट सर्च करें।"
+            "leg1": "अजमेर से अलवर: चेयर कार में सीट उपलब्ध है।",
+            "leg2": "अलवर से दिल्ली: अलवर से आगे का टिकट काउंटर से करंट कोटे में लें, 100% कन्फर्म सीट मिलेगी।",
+            "note": "अगर डायरेक्ट वेटिंग है, तो अलवर या रेवाड़ी को ब्रेक-पॉइंट बनाकर टिकट सर्च करें।"
         }
     else:
-        # बाकी सामान्य रूट्स के लिए डायनामिक जनरेटर
         distance = random.randint(350, 900)
         duration = f"{round(distance/65, 1)} Hrs"
         trains_data = [
@@ -95,9 +98,9 @@ def generate_seat_matrix(src, dest):
         ]
         split_info = {
             "title": "🎯 एआई स्प्लिट जर्नी सजेशन",
-            "leg1": f"📍 लेग 1 ({src} से नजदीकी बड़े जंक्शन तक) टिकट आसानी से उपलब्ध है।",
-            "leg2": f"📍 लेग 2 (बड़े जंक्शन से {dest} तक) के लिए करंट रिजर्वेशन काउंटर का उपयोग करें।",
-            "note": "💡 लाभ: इस ट्रिक से आपको पूरी यात्रा में वेटिंग लिस्ट का सामना नहीं करना पड़ेगा।"
+            "leg1": f"{src} से नजदीकी बड़े जंक्शन तक टिकट आसानी से उपलब्ध है।",
+            "leg2": f"बड़े जंक्शन से {dest} तक के लिए करंट रिजर्वेशन काउंटर का उपयोग करें।",
+            "note": "इस ट्रिक से आपको पूरी यात्रा में वेटिंग लिस्ट का सामना नहीं करना पड़ेगा।"
         }
 
     bus_fare = int(distance * 1.2) if "Bijainagar" in src or "Bhilwara" in src else 0
@@ -142,16 +145,15 @@ if st.button("🔥 एआई स्मार्ट रूट जनरेट क
         if origin in custom_tricks and destination in custom_tricks[origin]:
             route["trick"] = custom_tricks[origin][destination]
 
-        # किराया कैलकुलेशन
         is_ac = "AC Premium Combo" in travel_preference
         train_fare = int(route["train_fare_base"] * 2.8) if is_ac else route["train_fare_base"]
         total_expense = route["bus"] + train_fare
 
         # Metrics Dashboard
         m1, m2, m3 = st.columns(3)
-        with m1: st.markdown(f"<div class='metric-box'>🪙 <b>कुल खर्च</b><br><span style='font-size:20px; color:#10B981; font-weight:bold;'>₹{total_expense}</span></div>", unsafe_allow_html=True)
-        with m2: st.markdown(f"<div class='metric-box'>⏱️ <b>कुल समय</b><br><span style='font-size:20px; color:#3B82F6; font-weight:bold;'>{route['time']}</span></div>", unsafe_allow_html=True)
-        with m3: st.markdown(f"<div class='metric-box'>🛣️ <b>मुख्य हब</b><br><span style='font-size:20px; color:#F59E0B; font-weight:bold;'>{route['hub']}</span></div>", unsafe_allow_html=True)
+        with m1: st.markdown(f"<div class='metric-box'>🪙 <b>कुल खर्च</b><br><span style='font-size:20px; font-weight:bold; color:#10B981;'>₹{total_expense}</span></div>", unsafe_allow_html=True)
+        with m2: st.markdown(f"<div class='metric-box'>⏱️ <b>कुल समय</b><br><span style='font-size:20px; font-weight:bold; color:#3B82F6;'>{route['time']}</span></div>", unsafe_allow_html=True)
+        with m3: st.markdown(f"<div class='metric-box'>🛣️ <b>मुख्य हब</b><br><span style='font-size:20px; font-weight:bold; color:#F59E0B;'>{route['hub']}</span></div>", unsafe_allow_html=True)
 
         st.write("---")
         
@@ -173,16 +175,15 @@ if st.button("🔥 एआई स्मार्ट रूट जनरेट क
                 
                 st.markdown(f"""
                 <div class='live-card'>
-                    🔹 <b>{t['name']}</b> — ⏰ समय: {t['time']}<br>
-                    💺 <b>सीट की स्थिति:</b> <span style='background-color:{badge_color}; color:white; padding:2px 6px; border-radius:4px; font-weight:bold;'>{status_text}</span>
+                    <span style='color: #1F2937 !important;'>🔹 <b>{t['name']}</b> — ⏰ समय: {t['time']}</span><br>
+                    <span style='color: #1F2937 !important;'>💺 <b>सीट की स्थिति:</b></span> <span style='background-color:{badge_color}; color:white !important; padding:2px 6px; border-radius:4px; font-weight:bold;'>{status_text}</span>
                 </div>
                 """, unsafe_allow_html=True)
             
         with tab3:
-            st.write(f"### {route['split']['title']}")
             st.markdown(f"""
             <div class='split-box'>
-                <thead>
+                <span style='font-size:18px; font-weight:bold; color:#B45309;'>{route['split']['title']}</span><br><br>
                 <b>🔄 एआई स्प्लिट रूट ट्रैकर:</b><br><br>
                 1️⃣ {route['split']['leg1']}<br><br>
                 2️⃣ {route['split']['leg2']}<br><br>
