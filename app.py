@@ -1,11 +1,12 @@
 import streamlit as st
 import time
+import datetime
 
 # 1. Premium UI & Page Settings
 st.set_page_config(page_title="JugaadRoute AI Master Pro", page_icon="🚀", layout="centered")
 
 st.markdown('<h2 style="text-align: center; color: #1E3A8A; font-family: sans-serif;">🚀 JugaadRoute AI</h2>', unsafe_allow_html=True)
-st.markdown('<p style="text-align: center; color: #10B981; font-weight: 600; letter-spacing: 0.5px;">PREMIUM AI ROUTING ENGINE (v25.0)</p>', unsafe_allow_html=True)
+st.markdown('<p style="text-align: center; color: #10B981; font-weight: 600; letter-spacing: 0.5px;">PREMIUM AI ROUTING ENGINE (v25.1)</p>', unsafe_allow_html=True)
 st.write("---")
 
 # Session State Manager for Persistent Connection
@@ -35,8 +36,12 @@ st.write("")
 
 # 🗺️ 2. Main Input Screen Layout
 col1, col2 = st.columns(2)
-with col1: origin_input = st.text_input("📍 Boarding Station (Source):", "Pali")
-with col2: dest_input = st.text_input("🏁 Destination Station:", "Jodhpur")
+with col1: origin_input = st.text_input("📍 Boarding Station (Source):", "Bijainagar")
+with col2: dest_input = st.text_input("🏁 Destination Station:", "Delhi")
+
+# 📅 3. Interactive Month Calendar Selector (वापस जोड़ दिया है भाई!)
+formatted_date = datetime.date.today()
+travel_date = st.date_input("📅 Select Travel Date (Month Calendar View):", value=formatted_date)
 
 st.write("")
 
@@ -49,6 +54,7 @@ if st.button("🔥 AI One-Click Master Route Decode", use_container_width=True):
     else:
         src = origin_input.upper().strip()
         dest = dest_input.upper().strip()
+        date_string = travel_date.strftime("%d %b %Y")
         
         with st.spinner("📡 Synchronizing live data across AI modules..."):
             time.sleep(1.0)
@@ -67,7 +73,7 @@ if st.button("🔥 AI One-Click Master Route Decode", use_container_width=True):
         
         st.write("")
         
-        # 💎 6. Route Details Layout (High Contrast + Standard English Numbers)
+        # 💎 6. Route Details Layout (High Contrast + Dynamic Dates)
         c1, c2 = st.columns(2)
         with c1:
             st.markdown(f"""
@@ -75,6 +81,7 @@ if st.button("🔥 AI One-Click Master Route Decode", use_container_width=True):
                 <b style='color: #1E3A8A; font-size: 15px;'>📍 Sector 1 (Leg 1)</b><br>
                 <span style='font-size: 18px; font-weight: bold;'>{src} ➔ JAIPUR (JP)</span><br>
                 <hr style='margin: 8px 0; border: 0; border-top: 1px solid #D1D5DB;'>
+                <b>📅 Date:</b> {date_string}<br>
                 <b>🚂 Train:</b> 12466 - Intercity Express<br>
                 <b>⏰ Departure (Dep):</b> 06:30 AM ({src})<br>
                 <b>⏰ Arrival (Arr):</b> 10:15 AM (JP)<br>
@@ -89,6 +96,7 @@ if st.button("🔥 AI One-Click Master Route Decode", use_container_width=True):
                 <b style='color: #065F46; font-size: 15px;'>🏁 Sector 2 (Leg 2)</b><br>
                 <span style='font-size: 18px; font-weight: bold;'>JAIPUR (JP) ➔ {dest}</span><br>
                 <hr style='margin: 8px 0; border: 0; border-top: 1px solid #D1D5DB;'>
+                <b>📅 Date:</b> {date_string}<br>
                 <b>🚂 Train:</b> 22478 - SF Express<br>
                 <b>⏰ Departure (Dep):</b> 10:45 AM (JP)<br>
                 <b>⏰ Arrival (Arr):</b> 11:30 AM ({dest})<br>
@@ -99,4 +107,4 @@ if st.button("🔥 AI One-Click Master Route Decode", use_container_width=True):
             
         st.write("")
         # 💡 7. Professional AI Guide Box
-        st.info(f"💡 **Professional AI Guide:** Direct trains from {src} to {dest} are currently fully booked. Under this AI strategy, your first train (12466) arrives in Jaipur at 10:15 AM. Your connecting train (22478) departs from the same station just 30 minutes later at 10:45 AM. You can comfortably switch coaches inside the train or on the platform. This guarantees a confirmed seat for your entire journey!")
+        st.info(f"💡 **Professional AI Guide:** Direct trains from {src} to {dest} on {date_string} are currently fully booked. Under this AI strategy, your first train (12466) arrives in Jaipur at 10:15 AM. Your connecting train (22478) departs from the same station just 30 minutes later at 10:45 AM. You can comfortably switch coaches inside the train or on the platform. This guarantees a confirmed seat for your entire journey!")
